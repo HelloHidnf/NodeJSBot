@@ -1,0 +1,21 @@
+const { Message, Client } = require("discord.js")
+
+module.exports = {
+    name: "ssay",
+    description: "Only usable by <@410643436044156938>",
+
+    /**
+     * @param {Message} message 
+     * @param {Client} client
+     * @param {String[]} args
+     */
+
+    execute(message, client, args){
+        message.delete()
+        if(message.author.id === "410643436044156938"){
+            const channels = message.guild.channels.cache.filter(c => c.guild && c.isTextBased()).forEach(async channel => {
+                await channel.send(args.join(" "))
+            })
+        }
+    }
+}
