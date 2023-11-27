@@ -9,10 +9,19 @@ module.exports = {
     /**
      * @param {Message} message
      * @param {Client} client
-     * @param {prefixf} prefixf
      */
 
-    execute(message, prefixf){
+    execute(message, _, __, ___, ____, server){
+        let access = false
+        if(message.author.id === message.guild.ownerId) access = true
+        else{
+            for (role of server.adminRoles){
+                if(message.member.roles.cache.has(role)){
+                    access = true
+                }
+            }
+        }
+
         const embed = new EmbedBuilder()
         .setColor(0x00ffc8)
         .setTitle("Macros")
@@ -20,8 +29,8 @@ module.exports = {
 
         for(const file of CommandFiles){
             const Command = require(`../commands/${file}`)
-            if(!Command.description.includes("!ADMIN!") || (Command.description.includes("!ADMIN!") && message.channel.parentId === "1061658730418155522")){
-                embed.addFields({ name: Command.name, value: Command.description })
+            if(!Command.description.includes("!ADMIN!") || (Command.description.includes("!ADMIN!") && (access))){
+                if(!Command.description.includes("!QSUP!") || (Command.description.includes("!QSUP!") && message.guildId === "983033385721151538")) embed.addFields({ name: Command.name, value: Command.description })
             }
         }
         

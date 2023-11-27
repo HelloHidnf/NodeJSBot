@@ -26,14 +26,14 @@ module.exports = {
         .setColor(0x00ffc8)
         .setTimestamp()
 
-        client.channels.fetch("998098051992395788").then(channel => channel.send({ embeds: [embed] }))
+        client.channels.fetch(server.logChannel).then(channel => channel.send({ embeds: [embed] }))
 
         const sub = await user.getSubreddit(args[0]).fetch().catch(err => {
             message.channel.send(`${args[0]} isn't a valid subreddit`)
         })
 
         try{
-            if (!sub.over18 || (sub.over18 && (message.channelId === "1020825443236073556" || message.channel.nsfw))){
+            if (!sub.over18 || (sub.over18 && message.channel.nsfw)){
                 let num = 1
 
                 if(args[1]){

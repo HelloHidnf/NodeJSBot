@@ -11,11 +11,26 @@ module.exports = {
      * @param {String[]} args 
      */
 
-    async execute(message, client){
+    async execute(message, client, _, __, ___, server){
+        let access = false
+        if(message.author.id === message.guild.ownerId) access = true
+        else{
+            for (role of server.adminRoles){
+                if(message.member.roles.cache.has(role)){
+                    access = true
+                }
+            }
+        }
+        
+        if(args[0] === undefined){
+            message.channel.send("you have to add some text").then(msg => deleteMessage(msg, 5000))
+            return
+        }
+
         const canvas = createCanvas(1, 1)
         const context = canvas.getContext("2d")
 
-        if(!message.member.roles.cache.has("988346073531707392")) return
+        if(!access) return
 
         message.delete()
 

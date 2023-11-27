@@ -1,6 +1,8 @@
 const initialt = Date.now()
 
-const { token, test, qu, phaze, alty, reddit } = require("./config.json")
+const mongoose = require("mongoose")
+const { token, phaze, alty, reddit, mongodb } = require("./config.json")
+const servers = require("./db/servers")
 const { Client, GatewayIntentBits, Collection, MessageMentions, EmbedBuilder, ActivityType, RequestManager, RequestMethod } = require("discord.js")
 const fs = require("fs")
 const { deleteMessage } = require("./modules")
@@ -9,12 +11,8 @@ const { createCanvas } = require("@napi-rs/canvas")
 const ytdl = require("ytdl-core")
 const cp = require("child_process")
 const { default: ffmpegPath } = require("ffmpeg-static")
-let { nolog } = require("./config.json")
-const { error } = require("console")
 
 const user = new snoo(reddit)
-
-
 
 const client = new Client({
     intents: [
@@ -29,8 +27,6 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions
     ]
 })
-
-const prefix = "-"
 
 client.Commands = new Collection()
 
@@ -64,21 +60,34 @@ client.once("ready", () => {
     client.user.setActivity("chat | @ me for prefix", { type: ActivityType.Watching })
 })
 
-client.on("messageCreate", message => {
-    //Prefix commands
+client.on("messageCreate", async message => {
+    let server = await servers.findById(message.guildId)
+    if (!server){
+        server = await servers.create({
+            _id: message.guildId,
+            prefix: "-",
+            adminRoles: [],
+            memberRole: null,
+            botRole: null,
+            countingChannel: null,
+            logChannel: null,
+            noLogChannels: []
+        })
+    }
 
-    if(!message.author.bot && message.content.startsWith(prefix)){
-        const args = message.content.slice(prefix.length).trim().split(/ +/)
+    //Prefix commands
+    if(!message.author.bot && message.content.startsWith(server.prefix)){
+        const args = message.content.slice(server.prefix.length).trim().split(/ +/)
         const CommandName = args.shift().toLowerCase()
 
         const Command = client.Commands.get(CommandName)
 
         if(Command){
-            Command.execute(message, client, args, user, cp, nolog, nomsglog)
+            Command.execute(message, client, args, user, cp, server, nomsglog)
         }
     }
     //Non-Prefix commands
-    else if(!message.author.bot && !message.content.startsWith(prefix)){
+    else if(!message.author.bot && !message.content.startsWith(server.prefix)){
         const args = message.content.trim().split(/ +/)
         const FunName = args.shift().toLowerCase()
         
@@ -94,8 +103,11 @@ client.on("messageCreate", message => {
     }
 })
 
-client.on("messageUpdate", (oldMessage, newMessage) => {
-    if(oldMessage.content === newMessage.content || newMessage.author.bot || nolog.includes(newMessage.channel.id) || nomsglog.toLowerCase().includes(oldMessage.content)) return
+client.on("messageUpdate", async (oldMessage, newMessage) => {
+    let server = await servers.findById(oldMessage.guildId)
+
+    if (!server.logChannel)
+    if(oldMessage.content === newMessage.content || newMessage.author.bot || server.noLogChannels.includes(newMessage.channel.id) || nomsglog.includes(oldMessage.content.toLowerCase())) return
 
     if(oldMessage.content.length > 1024) oldMessage.content = oldMessage.content.substring(0, 1024)
     if(newMessage.content.length > 1024) newMessage.content = newMessage.content.substring(0, 1024)
@@ -111,25 +123,19 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
         { name: "New Message", value: newMessage.content }
     )
 
-    if(newMessage.guildId === "988446971461247027"){
-        newMessage.guild.channels.fetch(test)
-        .then(channel => {
-            channel.send({ embeds: [embed] })
-            return
-        }).catch({ })
-    }
-
-    else if(newMessage.guildId === "983033385721151538"){
-        newMessage.guild.channels.fetch(qu)
-        .then(channel => {
-            channel.send({ embeds: [embed] })
-            return
-        }).catch({ })
-    }
+    oldMessage.guild.channels.fetch(server.logChannel)
+    .then(channel => {
+        channel.send({ embeds: [embed]})
+        return
+    }).catch({ })
 })
 
-client.on("messageDelete", message => {
-    if(nolog.includes(message.channel.id) || message.author.bot || message.system || message.content.startsWith(prefix) || nomsglog.toLowerCase().includes(message.content)) return
+client.on("messageDelete", async message => {
+    let server = await servers.findById(message.guildId)
+
+    if(!server.logChannel) return
+    if(server.noLogChannels.includes(message.channelId) || message.author.bot || message.system || message.content.startsWith(server.prefix) || nomsglog.includes(message.content.toLowerCase())) return
+
     var des = message.content
 
     message.attachments.forEach(attachment => {
@@ -148,42 +154,45 @@ client.on("messageDelete", message => {
     .setTimestamp()
     .setColor(0x00ffc8)
 
-    if(message.guildId === "988446971461247027"){
-        message.guild.channels.fetch(test)
-        .then(channel => {
-            channel.send({ embeds: [embed]})
-            return
-        }).catch({ })
-    }
-
-    else if(message.guildId === "983033385721151538"){
-        message.guild.channels.fetch(qu)
-        .then((channel) => {
-            channel.send({ embeds: [embed]})
-            return
-        }).catch({ })
-    }
-})
-
-client.on("guildMemberAdd", user => {
-    if (!user.user.bot && user.guild.id === "983033385721151538"){
-        user.roles.add("991027323174289418")
+    message.guild.channels.fetch(server.logChannel)
+    .then(channel => {
+        channel.send({ embeds: [embed]})
         return
+    }).catch({ })
+})
+
+client.on("guildMemberAdd", async user => {
+    let server = await servers.findById(user.guild.id)
+    
+    if(!server) return
+    if (!user.user.bot && server.memberRole){
+        user.roles.add(server.memberRole)
     }
-    //test server
-    else if (user.guild.id === "988446971461247027"){
-        user.roles.add("988542205394300949")
-    }
-    //quest supporters
-    else if (user.guild.id === "983033385721151538"){
-        user.roles.add("988390823232176158")
+    else if (!server.botRole && server.botRole){
+        user.roles.add(server.botRole)
     }
 })
 
-process.on("uncaughtException", error => {
-    client.channels.fetch(test).then(channel => {
-        channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``)
+client.on("guildCreate", async guild => {
+    servers.create({
+        _id: guild.id,
+        prefix: "-",
+        adminRoles: [],
+        memberRole: null,
+        botRole: null,
+        countingChannel: null,
+        logChannel: null,
+        noLogChannels: []
     })
 })
 
-client.login(token)
+// process.on("uncaughtException", error => {
+//     client.channels.fetch("995931827476910110").then(channel => {
+//         channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``)
+//     })
+// })
+
+mongoose.connect(mongodb).then(() => {
+    console.log("connected to mongodb")
+    client.login(token)
+})

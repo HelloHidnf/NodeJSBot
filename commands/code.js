@@ -11,8 +11,18 @@ module.exports = {
      * @param {String[]} args 
      */
 
-    execute(message, client, args){
-        if(message.member.roles.cache.has("988346073531707392")||message.member.roles.cache.has("988541799738015774")){
+    execute(message, client, args, _, __, server){
+        let access = false
+        if(message.author.id === message.guild.ownerId) access = true
+        else{
+            for (role of server.adminRoles){
+                if(message.member.roles.cache.has(role)){
+                    access = true
+                }
+            }
+        }
+
+        if((access) && !args[0].includes(".")){
             try{
                 const code = require(`../commands/${args[0]}.js`)
                 message.reply(`\`\`\`js\n${code.execute}\`\`\``)

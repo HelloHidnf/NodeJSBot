@@ -3,7 +3,7 @@ const { alty } = require("../config.json")
 
 module.exports = {
     name: "nomsglog",
-    description: "!ADMIN!\nfetches the website where the messages not to log are",
+    description: "!ADMIN!!QSUP!\nfetches the website where the messages not to log are",
 
     /**
      * @param {Message} message 
@@ -11,8 +11,18 @@ module.exports = {
      * @param {String[]} args 
      */
 
-    execute(message, client, args, _, __, ___, nomsglog){
-        if(message.member.roles.cache.has("988346073531707392") || message.author.id === "410643436044156938"){
+    execute(message, client, args, _, __, server, nomsglog){
+        let access = false
+        if(message.author.id === message.guild.ownerId) access = true
+        else{
+            for (role of server.adminRoles){
+                if(message.member.roles.cache.has(role)){
+                    access = true
+                }
+            }
+        }
+        
+        if(access){
             message.delete()
             fetch(alty).then(data => {
                 data.json().then(thelog => {
