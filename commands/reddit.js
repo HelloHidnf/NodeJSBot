@@ -13,7 +13,7 @@ module.exports = {
      * @param {Client} client 
      */
 
-    async execute(message, client, args, user){
+    async execute(message, client, args, user, _, server){
         message.delete()
 
         if(args[0] === undefined){

@@ -123,11 +123,13 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
         { name: "New Message", value: newMessage.content }
     )
 
-    oldMessage.guild.channels.fetch(server.logChannel)
-    .then(channel => {
-        channel.send({ embeds: [embed]})
-        return
-    }).catch({ })
+    if (server.logChannel != null){
+        oldMessage.guild.channels.fetch(server.logChannel)
+        .then(channel => {
+            channel.send({ embeds: [embed]})
+            return
+        }).catch({ })
+    }
 })
 
 client.on("messageDelete", async message => {
@@ -154,11 +156,13 @@ client.on("messageDelete", async message => {
     .setTimestamp()
     .setColor(0x00ffc8)
 
-    message.guild.channels.fetch(server.logChannel)
-    .then(channel => {
-        channel.send({ embeds: [embed]})
-        return
-    }).catch({ })
+    if (server.logChannel != null){
+        message.guild.channels.fetch(server.logChannel)
+        .then(channel => {
+            channel.send({ embeds: [embed]})
+            return
+        }).catch({ })
+    }
 })
 
 client.on("guildMemberAdd", async user => {
