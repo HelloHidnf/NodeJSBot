@@ -95,7 +95,7 @@ client.on("messageCreate", async message => {
 
         if(["night", "gn", "gnsd", "good night"].includes(message.content.toLowerCase())) message.channel.send("Good night!")
         if (message.content.toLowerCase().includes("fuck off <@836301182175281214>") || message.content.toLowerCase().includes(`fuck you <@836301182175281214>`)) message.reply("Rude >:(")
-        else if (message.content === "<@836301182175281214>") message.reply(`Thats me, the current preset is ${prefix}, to find out the macros please do ${prefix}macros`)
+        else if (message.content === "<@836301182175281214>") message.reply(`Thats me, the current preset is ${server.prefix}, to find out the macros please do ${server.prefix}macros`)
         else if (Fun){
             Fun.execute(message, client, args)
         }
@@ -106,8 +106,7 @@ client.on("messageCreate", async message => {
 client.on("messageUpdate", async (oldMessage, newMessage) => {
     let server = await servers.findById(oldMessage.guildId)
 
-    if (!server.logChannel)
-    if(oldMessage.content === newMessage.content || newMessage.author.bot || server.noLogChannels.includes(newMessage.channel.id) || nomsglog.includes(oldMessage.content.toLowerCase())) return
+    if(oldMessage.content === newMessage.content || newMessage.author.bot || server.noLogChannels.includes(newMessage.channel.id) || nomsglog.includes(oldMessage.content.toLowerCase()) || !server.logChannel) return
 
     if(oldMessage.content.length > 1024) oldMessage.content = oldMessage.content.substring(0, 1024)
     if(newMessage.content.length > 1024) newMessage.content = newMessage.content.substring(0, 1024)
@@ -135,8 +134,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
 client.on("messageDelete", async message => {
     let server = await servers.findById(message.guildId)
 
-    if(!server.logChannel) return
-    if(server.noLogChannels.includes(message.channelId) || message.author.bot || message.system || message.content.startsWith(server.prefix) || nomsglog.includes(message.content.toLowerCase())) return
+    if(server.noLogChannels.includes(message.channelId) || message.author.bot || message.system || message.content.startsWith(server.prefix) || nomsglog.includes(message.content.toLowerCase()) || !server.logChannel) return
 
     var des = message.content
 
