@@ -29,7 +29,7 @@ module.exports = {
 
         for(const file of CommandFiles){
             const Command = require(`../commands/${file}`)
-            if(!Command.description.includes("!ADMIN!") || (Command.description.includes("!ADMIN!") && (access))){
+            if((!Command.description.includes("!ADMIN!") || !Command.description.includes("!MODERATOR!")) || ((Command.description.includes("!ADMIN!") || Command.description.includes("!MODERATOR!")) && (access))){
                 if(!Command.description.includes("!QSUP!") || (Command.description.includes("!QSUP!") && message.guildId === "983033385721151538")) embed.addFields({ name: Command.name, value: Command.description })
             }
         }

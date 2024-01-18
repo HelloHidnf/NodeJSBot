@@ -188,11 +188,14 @@ client.on("guildCreate", async guild => {
     })
 })
 
-// process.on("uncaughtException", error => {
-//     client.channels.fetch("995931827476910110").then(channel => {
-//         channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``)
-//     })
-// })
+process.on("uncaughtException", error => {
+    let date = new Date()
+    fs.writeFileSync(`logs/${date.getFullYear()}-${date.getMonth()+1}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}.log`, error.stack)
+    client.channels.fetch("995931827476910110").then(channel => {
+        channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``)
+        process.exit()
+    })
+})
 
 mongoose.connect(mongodb).then(() => {
     console.log("connected to mongodb")

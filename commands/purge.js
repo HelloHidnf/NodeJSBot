@@ -23,7 +23,7 @@ module.exports = {
         if(!access) return
         
         try{
-            message.channel.messages.fetch({ after: message.reference.messageId, limit: null }).then(messages => {
+            message.channel.messages.fetch({ after: message.reference.messageId, limit: 100 }).then(messages => {
                 message.channel.bulkDelete(messages.size+1)
             })
         }catch{
