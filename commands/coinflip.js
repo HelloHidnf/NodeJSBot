@@ -49,10 +49,13 @@ module.exports = {
                 coinbed.setTitle("Tails")
                 .setDescription("No inputs given")
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529908297728/tails.png")
-            }else{
+            }else if (coin > 0){
                 coinbed.setTitle("Heads")
                 .setDescription("No inputs given")
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529530806353/heads.png")
+            }else{
+                coinbed.setTitle("So unlikely you don't get an image of a coin")
+                .setImage("https://media.discordapp.net/attachments/988903771650285608/1202721884874088499/image.png?ex=65ce7d0a&is=65bc080a&hm=56b243b9472b0bfc02e9eff9f364ed28872ab40ff61926fa2a85ebdce3c85390&=&format=webp&quality=lossless&width=235&height=168")
             }
         }
         else{
@@ -60,10 +63,13 @@ module.exports = {
                 coinbed.setTitle(loop)
                 .setDescription(`Heads: ${args.join(" ").substring(0, split)}`)
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529908297728/tails.png")
-            }else{
+            }else if (coin > 0){
                 coinbed.setTitle(`Heads: ${args.join(" ").substring(0, split)}`)
                 .setDescription(loop)
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529530806353/heads.png")
+            }else{
+                coinbed.setTitle("So unlikely you don't get an image of a coin")
+                .setImage("https://media.discordapp.net/attachments/988903771650285608/1202721884874088499/image.png?ex=65ce7d0a&is=65bc080a&hm=56b243b9472b0bfc02e9eff9f364ed28872ab40ff61926fa2a85ebdce3c85390&=&format=webp&quality=lossless&width=235&height=168")
             }
         }
 
