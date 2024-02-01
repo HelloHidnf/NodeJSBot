@@ -10,7 +10,7 @@ module.exports = {
      */
 
     execute(message, client){
-        if (!message.content === "uno") return
+        if (!message.content === "uno" && !message.author.id === "410643436044156938") return
 
         embed = new EmbedBuilder()
         .setTitle("Hey")
