@@ -12,8 +12,7 @@ module.exports = {
     execute(message, _, args){
         message.delete()
 
-        let head = 0
-        let tail = 0
+        let coin = 0
         let loop = args.join(" ").indexOf(",")
         let count = NaN
         if (loop != -1){
@@ -30,11 +29,8 @@ module.exports = {
         let number = 0
 
         for (let i = 0; i < count; i++){
-            tempnum = Math.random() * 1
-            number = Math.round(tempnum)
-    
-            if (number === 0) tail++
-            else head++
+            if (Math.round(Math.random())) coin++
+            else coin--
         }
 
         let split = args.join(" ").indexOf("|")
@@ -46,10 +42,10 @@ module.exports = {
         coinbed = new EmbedBuilder()
         .setAuthor({ name: message.author.username, iconURL: message.author.avatarURL() })
         .setColor(0x00ffc8)
-        .setFooter({ text: `${head}|${tail}` })
+        .setFooter({ text: `${coin}` })
         .setTimestamp()
         if(args[0] === undefined){
-            if (number === 0){
+            if (coin < 0){
                 coinbed.setTitle("Tails")
                 .setDescription("No inputs given")
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529908297728/tails.png")
@@ -60,7 +56,7 @@ module.exports = {
             }
         }
         else{
-            if (number === 0){
+            if (coin < 0){
                 coinbed.setTitle(loop)
                 .setDescription(`Heads: ${args.join(" ").substring(0, split)}`)
                 .setImage("https://cdn.discordapp.com/attachments/988903771650285608/1067894529908297728/tails.png")
