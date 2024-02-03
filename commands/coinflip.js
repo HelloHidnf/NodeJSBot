@@ -1,4 +1,5 @@
 const { Message, EmbedBuilder } = require("discord.js")
+const { deleteMessage } = require("../modules")
 
 module.exports = {
     name: "coinflip",
@@ -23,7 +24,11 @@ module.exports = {
             count = parseInt(count)
         }catch{}
         if(isNaN(count)) count = 1
-        else if (count > 1000000) return message.reply("but why (cap is 1 million)")
+        else if (count > 1000000){
+            return message.channel.send("but why (cap is 1 million)").then(msg => {
+                deleteMessage(msg, 5000)
+            })
+        }
 
         let tempnum = 0
         let number = 0
