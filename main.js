@@ -1,4 +1,5 @@
-const initialt = Date.now()
+let oldDate = Date.now()
+let errorCount = 0
 
 const mongoose = require("mongoose")
 const { token, phaze, alty, reddit, mongodb } = require("./config.json")
@@ -56,7 +57,7 @@ fetch(alty).then(data => {
 })
 
 client.once("ready", () => {
-    console.log(`Connected to ${client.user.username}\n${Date.now() - initialt}ms/${(Date.now() - initialt)/1000} seconds`)
+    console.log(`Connected to ${client.user.username}\n${Date.now() - oldDate}ms/${(Date.now() - oldDate)/1000} seconds`)
     client.user.setActivity("chat | @ me for prefix", { type: ActivityType.Watching })
 })
 
@@ -193,6 +194,16 @@ process.on("uncaughtException", error => {
     fs.writeFileSync(`logs/${date.getFullYear()}-${date.getMonth()+1}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}.log`, error.stack)
     client.channels.fetch("995931827476910110").then(channel => {
         channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``)
+    }).finally(message => {
+        if (oldDate-date > 5000){
+            date = oldDate
+            errorCount = 0
+        }else{
+            errorCount += 1
+            if (errorCount = 10){
+                process.exit(error.stack)
+            }
+        }
     })
 })
 
