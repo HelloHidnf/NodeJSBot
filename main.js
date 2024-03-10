@@ -171,7 +171,7 @@ client.on("guildMemberAdd", async user => {
     if (!user.user.bot && server.memberRole){
         user.roles.add(server.memberRole)
     }
-    else if (!server.botRole && server.botRole){
+    else if (server.botRole){
         user.roles.add(server.botRole)
     }
 })
