@@ -3,4 +3,5 @@ package.json
 config.json
 node_modules
 videos
+logs
 .vscode

@@ -4,7 +4,7 @@ let errorCount = 0
 const mongoose = require("mongoose")
 const { token, phaze, alty, reddit, mongodb } = require("./config.json")
 const servers = require("./db/servers")
-const { Client, GatewayIntentBits, Collection, MessageMentions, EmbedBuilder, ActivityType, RequestManager, RequestMethod } = require("discord.js")
+const { Client, GatewayIntentBits, Collection, MessageMentions, EmbedBuilder, ActivityType, RequestManager, RequestMethod, Options } = require("discord.js")
 const fs = require("fs")
 const { deleteMessage } = require("./modules")
 const snoo = require("snoowrap")
@@ -201,7 +201,7 @@ process.on("uncaughtException", error => {
         }else{
             errorCount += 1
             if (errorCount = 10){
-                process.exit(error.stack)
+                process.exit()
             }
         }
     })

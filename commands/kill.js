@@ -9,12 +9,10 @@ module.exports = {
      * @param {Client} client
      */
 
-    execute(message, client){
-        if(message.author.id === "564423527923712000"){
-            client.users.fetch("410643436044156938").then(async user => {
-                await user.send("bot stopped")
-                process.exit()
-            })
+    async execute(message, client){
+        if(message.author.id === "410643436044156938"){
+            await message.author.send("Bot stopped")
+            process.exit()
         }
     }
 }
