@@ -1,0 +1,13 @@
+{
+  "main": "main.js",
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.37",
+    "discord.js": "^14.1.2",
+    "ffmpeg-static": "^5.1.0",
+    "form-data": "^4.0.0",
+    "mongoose": "^7.5.3",
+    "node-fetch": "^2.6.9",
+    "snoowrap": "^1.23.0",
+    "ytdl-core": "^4.11.4"
+  }
+}
