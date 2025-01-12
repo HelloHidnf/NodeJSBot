@@ -31,6 +31,7 @@ const client = new Client({
 
 GlobalFonts.registerFromPath("./fonts/gg sans Regular.ttf", "gg");
 GlobalFonts.registerFromPath("./fonts/gg sans Semibold.ttf", "gg bold");
+GlobalFonts.registerFromPath("./fonts/ggsans-NormalItalic.ttf", "gg italic");
 GlobalFonts.registerFromPath("./fonts/NotoColorEmoji-Regular.ttf", "emojis");
 
 client.Commands = new Collection();
@@ -198,15 +199,7 @@ process.on("uncaughtException", error => {
     client.channels.fetch("995931827476910110").then(channel => {
         channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``);
     }).finally(message => {
-        if (oldDate-date > 5000){
-            date = oldDate;
-            errorCount = 0;
-        }else{
-            errorCount += 1;
-            if (errorCount = 10){
-                process.exit();
-            };
-        };
+        process.exit();
     });
 });
 
