@@ -209,7 +209,7 @@ module.exports = {
      */
 
     async execute(message, client, args){
-        if (message.guildId != "988446971461247027") return;
+        if (message.guildId != "983033385721151538") return;
         if (message.reference === null) {
             message.reply("please reply to a message that you want to highlight, if you want to highlight more than one, you can type a number afte the command");
             return;
@@ -301,8 +301,12 @@ module.exports = {
             context.drawImage(profile[1], 10, profile[0], 50, 50);
         })
 
-        message.guild.channels.fetch("999271331247964202").then(async channel => {
-            channel.send({ content: `${contents[3]} was highlighted by ${message.author.username}`, files: [new AttachmentBuilder(await canvas.encode("png"), { name: "highlight.png" })] });
+        let name;
+        if (message.channel.nsfw) name = "SPOILER_highlight.png";
+        else name = "highlight.png";
+
+        message.guild.channels.fetch("1077614318968909954").then(async channel => {
+            channel.send({ content: `${contents[3]} was highlighted by ${message.author.username}`, files: [new AttachmentBuilder(await canvas.encode("png"), { name: name })] });
         })
         message.delete();
     }
