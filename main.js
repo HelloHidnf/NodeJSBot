@@ -2,7 +2,7 @@ let oldDate = Date.now();
 let errorCount = 0;
 
 const mongoose = require("mongoose");
-const { token, phaze, alty, reddit, mongodb } = require("./config.json");
+const { token, phaze, alty, reddit, mongodb, backgrounds } = require("./config.json");
 const servers = require("./db/servers");
 const { Client, GatewayIntentBits, Collection, MessageMentions, EmbedBuilder, ActivityType, RequestManager, RequestMethod, Options } = require("discord.js");
 const fs = require("fs");
@@ -12,6 +12,7 @@ const { createCanvas, GlobalFonts } = require("@napi-rs/canvas");
 const ytdl = require("ytdl-core");
 const cp = require("child_process");
 const { default: ffmpegPath } = require("ffmpeg-static");
+require("./background-command-files/index");
 
 const user = new snoo(reddit);
 
@@ -89,7 +90,7 @@ client.on("messageCreate", async message => {
         const Command = client.Commands.get(CommandName);
 
         if(Command){
-            Command.execute(message, client, args, user, cp, server, nomsglog);
+            Command.execute(message, client, args, user, cp, server, nomsglog, backgrounds);
         };
     }
     //Non-Prefix commands
@@ -194,14 +195,26 @@ client.on("guildCreate", async guild => {
 });
 
 process.on("uncaughtException", error => {
+    console.log(error.message);
+    if (error.message === "fetch failed") return;
     let date = new Date();
     fs.writeFileSync(`logs/${date.getFullYear()}-${date.getMonth()+1}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}.log`, error.stack);
+    let json = JSON.parse(fs.readFileSync("config.json"));
+    json["backgrounds"] = backgrounds;
+    fs.writeFileSync("config.json", JSON.stringify(json, null, 2));
     client.channels.fetch("995931827476910110").then(channel => {
         channel.send(`<@410643436044156938>\n\`\`\`${error}\`\`\``);
     }).finally(message => {
         process.exit();
     });
 });
+
+process.on("SIGINT", () => {
+    let json = JSON.parse(fs.readFileSync("config.json"));
+    json["backgrounds"] = backgrounds;
+    fs.writeFileSync("config.json", JSON.stringify(json, null, 2));
+    process.exit();
+})
 
 mongoose.connect(mongodb).then(() => {
     console.log("connected to mongodb");
